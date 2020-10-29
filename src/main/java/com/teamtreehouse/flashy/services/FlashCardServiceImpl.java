@@ -6,11 +6,7 @@ import com.teamtreehouse.flashy.repositories.FlashCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static java.util.stream.Collectors.toList;
 
@@ -30,7 +26,7 @@ public class FlashCardServiceImpl implements FlashCardService {
 
   @Override
   public FlashCard getFlashCardById(Long id) {
-    return flashCardRepository.findOne(id);
+    return flashCardRepository.findById(id).get();
   }
 
   @Override
@@ -62,12 +58,11 @@ public class FlashCardServiceImpl implements FlashCardService {
         continue;
       }
       Long lowestScore = idToViewCounts.get(leastViewedId);
-      if (entry.getValue() >= lowestScore) {
-        break;
+      if (entry.getValue() < lowestScore) {
+        leastViewedId = entry.getKey();
       }
-      leastViewedId = entry.getKey();
     }
-    return flashCardRepository.findOne(leastViewedId);
+    return flashCardRepository.findById(leastViewedId).get();
   }
 
   @Override
@@ -75,7 +70,7 @@ public class FlashCardServiceImpl implements FlashCardService {
     List<FlashCard> cards = flashCardRepository.findAll();
     Collections.shuffle(cards);
     return cards.stream()
-            .limit(amount)
-            .collect(toList());
+        .limit(amount)
+        .collect(toList());
   }
 }
