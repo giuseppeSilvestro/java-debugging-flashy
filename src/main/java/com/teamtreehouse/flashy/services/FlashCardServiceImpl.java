@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,23 +47,36 @@ public class FlashCardServiceImpl implements FlashCardService {
   }
 
   @Override
-  public FlashCard getNextFlashCardBasedOnViews(Map<Long, Long> idToViewCounts) {
+  public FlashCard getNextFlashCardBasedOnViews(Map<Long, Long> idToViewCounts)
+      throws IllegalAccessException {
     FlashCard card = getNextUnseenFlashCard(idToViewCounts.keySet());
-    if (card != null) {
-      return card;
+    if (card == null) {
+      card = getLeastViewedFlashCard(idToViewCounts);
     }
+    return card;
+  }
+
+  public FlashCard getLeastViewedFlashCard(Map<Long, Long> idToViewCounts)
+      throws IllegalAccessException {
     Long leastViewedId = null;
-    for (Map.Entry<Long, Long> entry : idToViewCounts.entrySet()) {
-      if (leastViewedId == null) {
-        leastViewedId = entry.getKey();
-        continue;
-      }
-      Long lowestScore = idToViewCounts.get(leastViewedId);
-      if (entry.getValue() < lowestScore) {
-        leastViewedId = entry.getKey();
-      }
-    }
-    return flashCardRepository.findById(leastViewedId).get();
+    List<Map.Entry<Long, Long>> entries = new ArrayList<>(idToViewCounts.entrySet());
+    Collections.shuffle(entries);
+    return entries.stream()
+        .min(Comparator.comparing(Map.Entry::getValue))
+        .map(entry -> flashCardRepository.findById(entry.getKey()).get())
+        .orElseThrow(IllegalAccessException::new);
+
+//    for (Map.Entry<Long, Long> entry : entries) {
+//      if (leastViewedId == null) {
+//        leastViewedId = entry.getKey();
+//        continue;
+//      }
+//      Long lowestScore = idToViewCounts.get(leastViewedId);
+//      if (entry.getValue() < lowestScore) {
+//        leastViewedId = entry.getKey();
+//      }
+//    }
+//    return flashCardRepository.findById(leastViewedId).get();
   }
 
   @Override

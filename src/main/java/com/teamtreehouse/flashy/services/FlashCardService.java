@@ -10,6 +10,7 @@ public interface FlashCardService {
   Long getCurrentCount();
   FlashCard getFlashCardById(Long id);
   FlashCard getNextUnseenFlashCard(Collection<Long> seenIds);
-  FlashCard getNextFlashCardBasedOnViews(Map<Long, Long> idToViewCounts);
+  FlashCard getNextFlashCardBasedOnViews(Map<Long, Long> idToViewCounts)
+      throws IllegalAccessException;
   List<FlashCard> getRandomFlashCards(int i);
 }

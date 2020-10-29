@@ -33,7 +33,7 @@ public class FlashCardController {
   }
 
   @RequestMapping("/flashcard/next")
-  public String showNextFlashCard(HttpServletRequest req) {
+  public String showNextFlashCard(HttpServletRequest req) throws IllegalAccessException {
     Map<Long, Long> cardCounts = getCardCounts(req);
     FlashCard card = flashCardService.getNextFlashCardBasedOnViews(cardCounts);
     return "redirect:/flashcard/" + card.getId();
