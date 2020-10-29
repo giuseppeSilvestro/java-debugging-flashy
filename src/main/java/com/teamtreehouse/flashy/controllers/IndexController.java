@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
+import javafx.scene.AmbientLight;
 
 @Controller
 public class IndexController {
@@ -33,8 +34,10 @@ public class IndexController {
     }
     ctaBuilder.append(" and ");
     Long totalCount = flashCardService.getCurrentCount();
-    ctaBuilder.append(totalCount);
-    ctaBuilder.append(" more");
+    if (totalCount> AMOUNT_TO_SHOW) {
+      ctaBuilder.append(totalCount - AMOUNT_TO_SHOW);
+      ctaBuilder.append(" more");
+    }
     model.addAttribute("cta", ctaBuilder.toString());
     model.addAttribute("flashCardCount", totalCount);
     return "index";
